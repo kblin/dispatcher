@@ -240,6 +240,7 @@ def create_podman_command(job, conf, as_cmdline):
     mounts = [
         f"{job_conf['clusterblastdir']}:/databases/clusterblast:ro",
         f"{job_conf['clustercomparedir']}:/databases/clustercompare:ro",
+        f"{job_conf['comparippsondir']}:/databases/comparippson:ro",
         f"{job_conf['pfamdir']}:/databases/pfam:ro",
         f"{job_conf['resfamdir']}:/databases/resfam:ro",
         f"{job_conf['tigrfamdir']}:/databases/tigrfam:ro",
