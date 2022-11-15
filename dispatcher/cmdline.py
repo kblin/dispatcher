@@ -12,7 +12,7 @@ def create_commandline(job, conf):
     :return: A list of strings with the command line args
     """
 
-    if job.jobtype in ('antismash6'):
+    if job.jobtype in ('antismash6', 'antismash7'):
         return create_commandline_as6(job, conf)
 
     raise InvalidJobType(job.jobtype)
