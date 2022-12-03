@@ -122,3 +122,23 @@ def test_create_commandline6_cassis_override(conf, db):
 
     cmdline = create_commandline(job, conf)
     assert cmdline == expected
+
+
+def test_create_commandline7_tbfs(conf, db):
+    job = Job(db, 'bacteria-fake')
+    job.jobtype = "antismash7"
+    job.filename = "fake.gbk"
+    job.tfbs = True
+
+    expected = [
+        'fake.gbk',
+        '--cpus', '1',
+        '--taxon', 'bacteria',
+        '--output-dir', '/data/antismash/upload/bacteria-fake',
+        '--logfile', '/data/antismash/upload/bacteria-fake/bacteria-fake.log',
+        '--debug',
+        '--tfbs'
+    ]
+
+    cmdline = create_commandline(job, conf)
+    assert cmdline == expected

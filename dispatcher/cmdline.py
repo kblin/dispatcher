@@ -12,8 +12,10 @@ def create_commandline(job, conf):
     :return: A list of strings with the command line args
     """
 
-    if job.jobtype in ('antismash6', 'antismash7'):
+    if job.jobtype == 'antismash6':
         return create_commandline_as6(job, conf)
+    elif job.jobtype == 'antismash7':
+        return create_commandline_as7(job, conf)
 
     raise InvalidJobType(job.jobtype)
 
@@ -96,6 +98,20 @@ def create_commandline_as6(job, conf):
         args.append('--cassis')
 
     return args
+
+
+def create_commandline_as7(job, conf):
+    """Create the command line to run antiSMASH 7 jobs
+
+    :param job: Job object representing the job to run
+    :param conf: RunConfig object with the runtime configuration
+    :return: A list of strings with the command line args
+    """
+
+    args = create_commandline_as6(job, conf)
+
+    if job.tfbs:
+        args.append('--tfbs')
 
 
 def _get_job_folder(job: AsyncJob) -> str:
