@@ -17,6 +17,8 @@ def create_commandline(job, conf) -> list[str]:
         return create_commandline_as6(job, conf)
     elif job.jobtype == 'antismash7':
         return create_commandline_as7(job, conf)
+    elif job.jobtype == "experimentalsmash-paras":
+        return create_commandline_es_paras(job, conf)
 
     raise InvalidJobType(job.jobtype)
 
@@ -114,6 +116,35 @@ def create_commandline_as7(job, conf) -> list[str]:
 
     if job.tfbs:
         args.append('--tfbs')
+
+    return args
+
+def create_commandline_es_paras(job, conf) -> list[str]:
+    """Create the command line to run experimentalSMASH PARAS jobs
+
+    :param job: Job object representing the job to run
+    :param conf: RunConfig object with the runtime configuration
+    :return: A list of strings with the command line args
+    """
+    job_folder = _get_job_folder(job)
+
+    args = [
+        job.filename,
+        '--cpus', str(conf.cpus),
+        '--taxon', job.taxon,
+        '--output-dir', job_folder,
+        '--logfile', os.path.join(job_folder, '{}.log'.format(job.job_id)),
+        '--debug',  # TODO: read this from the config later
+        '--limit', str(conf.limit),
+    ]
+
+    if job.gff3:
+        args.extend(['--genefinding-gff3', os.path.join(os.sep, 'input', job.gff3)])
+
+    if job.genefinding:
+        args.extend(['--genefinding-tool', job.genefinding])
+    else:
+        args.extend(['--genefinding-tool', 'none'])
 
     return args
 
