@@ -13,21 +13,8 @@ def create_commandline(job, conf) -> list[str]:
     :return: A list of strings with the command line args
     """
 
-    if job.jobtype == 'antismash6':
-        return create_commandline_as6(job, conf)
-    elif job.jobtype == 'antismash7':
-        return create_commandline_as7(job, conf)
-
-    raise InvalidJobType(job.jobtype)
-
-
-def create_commandline_as6(job, conf) -> list[str]:
-    """Create the command line to run antiSMASH 6 jobs
-
-    :param job: Job object representing the job to run
-    :param conf: RunConfig object with the runtime configuration
-    :return: A list of strings with the command line args
-    """
+    if job.jobtype not in ["antismash6", "antismash7", "antismash8"]:
+        raise InvalidJobType(job.jobtype)
 
     job_folder = _get_job_folder(job)
 
@@ -76,7 +63,10 @@ def create_commandline_as6(job, conf) -> list[str]:
         args.append('--cc-mibig')
 
     if job.genefinding:
-        args.extend(['--genefinding-tool', job.genefinding])
+        if job.jobtype in ["antismash8"] and job.taxon == "fungi":
+            args.extend(["--genefinding-tool", "none"])
+        else:
+            args.extend(['--genefinding-tool', job.genefinding])
     else:
         args.extend(['--genefinding-tool', 'none'])
 
@@ -97,27 +87,15 @@ def create_commandline_as6(job, conf) -> list[str]:
     if job.sideload_simple:
         args.extend(['--sideload-simple', job.sideload_simple])
 
-    if job.cassis and conf.run_cassis:
-        args.append('--cassis')
-
-    return args
-
-
-def create_commandline_as7(job, conf) -> list[str]:
-    """Create the command line to run antiSMASH 7 jobs
-
-    :param job: Job object representing the job to run
-    :param conf: RunConfig object with the runtime configuration
-    :return: A list of strings with the command line args
-    """
-
-    args = create_commandline_as6(job, conf)
-
     if job.tfbs:
         args.append('--tfbs')
 
     if job.ncbi_context:
         args.append('--html-ncbi-context')
+
+    if job.jobtype in ["antismash6", "antismash7"]:
+        if conf.run_cassis and job.cassis:
+            args.append("--cassis")
 
     return args
 
