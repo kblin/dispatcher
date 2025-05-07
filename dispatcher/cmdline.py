@@ -13,7 +13,7 @@ def create_commandline(job, conf) -> list[str]:
     :return: A list of strings with the command line args
     """
 
-    if job.jobtype not in ["antismash6", "antismash7", "antismash8"]:
+    if job.jobtype not in ["epssmash"]:
         raise InvalidJobType(job.jobtype)
 
     job_folder = _get_job_folder(job)
@@ -28,75 +28,8 @@ def create_commandline(job, conf) -> list[str]:
         '--limit', str(conf.limit),
     ]
 
-    if job.gff3:
-        args.extend(['--genefinding-gff3', os.path.join(os.sep, 'input', job.gff3)])
-
-    # All config that should work for both minimal and regular jobs needs to go above this line
-    if job.minimal:
-        args.append('--minimal')
-        return args
-
-    if job.asf:
-        args.append('--asf')
-
-    if job.hmmdetection_strictness:
-        args.extend(['--hmmdetection-strictness', job.hmmdetection_strictness])
-
-    if job.clusterhmmer:
-        args.append('--clusterhmmer')
-    if job.pfam2go:
-        if '--clusterhmmer' not in args:
-            args.append('--clusterhmmer')
-        args.append('--pfam2go')
-
-    if job.tigrfam:
-        args.append('--tigrfam')
-
     if job.clusterblast:
         args.append('--cb-general')
-    if job.knownclusterblast:
-        args.append('--cb-knownclusters')
-    if job.subclusterblast:
-        args.append('--cb-subclusters')
-
-    if job.cc_mibig:
-        args.append('--cc-mibig')
-
-    if job.genefinding:
-        if job.jobtype in ["antismash8"] and job.taxon == "fungi":
-            args.extend(["--genefinding-tool", "none"])
-        else:
-            args.extend(['--genefinding-tool', job.genefinding])
-    else:
-        args.extend(['--genefinding-tool', 'none'])
-
-    if job.smcog_trees:
-        args.append('--smcog-trees')
-
-    if job.rre:
-        args.append('--rre')
-        if job.rre_minlength:
-            args.extend(['--rre-minlength', str(job.rre_minlength)])
-        if job.rre_cutoff:
-            args.extend(['--rre-cutoff', str(job.rre_cutoff)])
-
-    if job.sideloads:
-        filenames = [os.path.join(os.sep, 'input', s) for s in job.sideloads]
-        args.extend(['--sideload', ",".join(filenames)])
-
-    if job.sideload_simple:
-        args.extend(['--sideload-simple', job.sideload_simple])
-
-    if job.tfbs:
-        args.append('--tfbs')
-
-    if job.ncbi_context:
-        args.append('--html-ncbi-context')
-
-    if job.jobtype in ["antismash6", "antismash7"]:
-        if conf.run_cassis and job.cassis:
-            args.append("--cassis")
-
     return args
 
 
