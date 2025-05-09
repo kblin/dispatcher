@@ -28,8 +28,18 @@ def create_commandline(job, conf) -> list[str]:
         '--limit', str(conf.limit),
     ]
 
+    if job.clusterhmmer:
+        args.append('--clusterhmmer')
+    if job.pfam2go:
+        if '--clusterhmmer' not in args:
+            args.append('--clusterhmmer')
+        args.append('--pfam2go')
+
     if job.clusterblast:
         args.append('--cb-general')
+
+    if job.tfbs:
+        args.append('--tfbs')
     return args
 
 
