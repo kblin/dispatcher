@@ -28,6 +28,11 @@ def create_commandline(job, conf) -> list[str]:
         '--limit', str(conf.limit),
     ]
 
+    if job.genefinding:
+        args.extend(['--genefinding-tool', job.genefinding])
+    else:
+        args.extend(['--genefinding-tool', 'none'])
+
     if job.clusterhmmer:
         args.append('--clusterhmmer')
     if job.pfam2go:
